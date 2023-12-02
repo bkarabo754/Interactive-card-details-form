@@ -3,71 +3,18 @@ import AsideCard from "../assets/bg-main-desktop.png";
 import Card from "../assets/bgCardFront.png";
 import BackCard from "../assets/bgCardBack.png";
 import CardLogo from "../assets/CardLogo.png";
+import Confirm from "./Confirm";
+import { format } from "date-fns";
 
 const Header = () => {
+  const [confirmed, setConfirmed] = useState(false);
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
-  const [expiryMonth, setExpiryMonth] = useState("");
-  const [expiryYear, setExpiryYear] = useState("");
+  const [date, setDate] = useState(0);
   const [cvc, setCvc] = useState("");
-  const [formErrors, setFormErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    switch (name) {
-      case "cardName":
-        setCardName(value);
-        break;
-      case "cardNumber":
-        setCardNumber(value);
-        break;
-      case "expiryMonth":
-        setExpiryMonth(value);
-        break;
-      case "expiryYear":
-        setExpiryYear(value);
-        break;
-      case "cvc":
-        setCvc(value);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Perform form validation
-    const errors = {};
-
-    if (!cardName.trim()) {
-      errors.cardName = "Cardholder name is required";
-    }
-    if (!cardNumber.trim() || !/^\d{16}$/.test(cardNumber)) {
-      errors.cardNumber = "Wrong format, numbers only.";
-    }
-    if (!expiryMonth.trim() || !/^\d{2}$/.test(expiryMonth)) {
-      errors.expiryMonth = "Can't be blank";
-    }
-    if (!expiryYear.trim() || !/^\d{2}$/.test(expiryYear)) {
-      errors.expiryYear = "Expiry year is invalid";
-    }
-    if (!cvc.trim() || !/^\d{3}$/.test(cvc)) {
-      errors.cvc = "Can't be blank";
-    }
-
-    setFormErrors(errors);
-
-    // If there are no errors, you can proceed with form submission
-    if (Object.keys(errors).length === 0) {
-      // Perform your form submission logic here
-      console.log("Form submitted successfully!");
-    }
-  };
 
   return (
-    <header className="bg-[#F5F6F9] flex h-screen flex-col overflow-hidden items-center justify-center">
+    <header className="bg-[#F5F6F9] flex h-screen lg:h-screen flex-col overflow-hidden items-center justify-center">
       <section className="relative flex w-[1200px]  h-[700px] md:h-[100%] shadow-lg bg-white">
         <aside className="relative z-1">
           <img
@@ -89,145 +36,120 @@ const Header = () => {
             className="absolute top-[-26%] md:top-[-70px] left-[-3%] md:left-[-18%] object-contain transform -translate-x-[-50%] -translate-y-[-50%] w-20 md:w-14 md:ml-96 h-20 z-20"
           />
 
-          <div className="mt-[-120px] px-20 z-10 flex flex-col">
-            <h2 className="text-white text-3xl md:text-[18px] px-10 ml-[-90px] md:ml-[230px] mb-6 md:mb-1 lg:text-3xl tracking-widest whitespace-nowrap z-10">
-              0000 0000 0000 0000
-            </h2>
+          <div className="absolute top-28 md:top-32 left-44 md:left-[450px] flex-col transform -translate-x-1/2 -translate-y-1/2">
+            <div className="mb-10 md:mb-5">
+              <h2 className="text-white whitespace-nowrap md:text-lg text-2xl lg:text-3xl tracking-widest">
+                {cardNumber}
+              </h2>
+            </div>
 
             <ul className="flex items-center justify-between">
-              <li className="uppercase text-xs font-medium text-white  md:mb-0 ml-[-45px] md:ml-[269px] lg:ml-[-45px]">
-                Jane AppleSeed
+              <li className="text-white text-xs md:text-xs whitespace-nowrap md:mb-24 uppercase lg:text-xl tracking-widest">
+                {cardName}
               </li>
-
-              <li className="lg:text-2xl md:text-[10px] text-white mr-[-50px] md:mr-[-260px]">
-                00/00
+              <li className="text-white text-xs absolute ml-72 md:ml-48 md:text-xs md:mb-24 lg:text-xl tracking-widest ">
+                {format(new Date(date), "MM/yy")}
               </li>
             </ul>
           </div>
         </article>
 
-        <article className="absolute top-[70%] md:top-[12%] left-[35%] md:left-[51%] transform translate-x-[-45%] translate-y-[-50%] w-96 md:w-[250px] h-52 md:h-[150px] z-1">
+        <article className="absolute top-[70%] md:top-[13%] left-[35%] md:left-[51%] transform translate-x-[-45%] translate-y-[-50%] w-96 md:w-[250px] h-52 md:h-[150px] z-1">
           <img src={BackCard} alt="Card Front" className="w-full h-full" />
           <div className="absolute top-0 left-32 w-full h-full flex flex-col items-center justify-center list-none">
             <li className="text-white text-sm md:text-xs tracking-widest whitespace-nowrap md:ml-[-100px]">
-              000
+              {cvc}
             </li>
           </div>
         </article>
 
-        <div className="flex flex-col px-48  md:ml-[-407px] md:mt-[120px] py-52 md:py-48 space-x-32">
-          <div className="flex flex-col">
-            <h1 className="uppercase text-xs md:text-[11px] font-medium text-black italic ml-32">
-              cardholder name
-            </h1>
-            <div className="flex py-5 ml-32">
-              <input
-                type="text"
-                name="cardName"
-                value={cardName}
-                className={`border bg-white py-3 md:py-2 px-4 w-[290px] rounded-md ${
-                  formErrors.cardName ? "border-red-500" : ""
-                }`}
-                onChange={handleChange}
-                placeholder="e.g. Jane Appleseed"
-              />
+        <div className="pt-8 px-1 pb-20">
+          <form className="flex flex-col px-48 md:ml-[-400px] ml-20 md:mt-[100px] py-40 md:py-48 space-x-32">
+            <div className="flex flex-col">
+              <h1 className="uppercase text-xs md:text-[11px] font-medium text-black italic ml-32">
+                cardholder name
+              </h1>
+              <div className="flex py-2 ml-32">
+                <input
+                  type="text"
+                  name="cardholder_name"
+                  id="cardholder_name"
+                  placeholder="e.g. Jane Appleseed"
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value)}
+                  className="border bg-white py-3 md:py-2 px-4 w-[290px] md:w-[280px] rounded-md"
+                />
+              </div>
             </div>
-            {formErrors.cardName && (
-              <p className="text-red-500 ml-32">{formErrors.cardName}</p>
-            )}
-          </div>
 
-          <div className="flex flex-col">
-            <h1 className="uppercase text-xs md:text-[11px] font-medium text-black italic">
-              Card number
-            </h1>
-            <div className="flex py-3">
-              <input
-                type="text"
-                name="cardNumber"
-                value={cardNumber}
-                className={`border bg-white py-2 md:py-2 px-4 w-[290px] rounded-md ${
-                  formErrors.cardNumber ? "border-red-500" : ""
-                }`}
-                onChange={handleChange}
-                placeholder="e.g. 1234 5678 9123 0000"
-              />
+            <div className="flex flex-col py-0">
+              <h1 className="uppercase text-xs md:text-[11px] font-medium text-black italic">
+                Card number
+              </h1>
+              <div className="flex py-2">
+                <input
+                  type="text"
+                  name="card_number"
+                  id="card_number"
+                  value={cardNumber
+                    .replace(/\s/g, "")
+                    .replace(/(\d{4})/g, "$1 ")
+                    .trim()}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  maxLength={19}
+                  className="border bg-white py-2 md:py-2 px-4 w-[290px] md:w-[280px] rounded-md"
+                  placeholder="e.g. 1234 5678 9123 0000"
+                />
+              </div>
             </div>
-            {formErrors.cardNumber && (
-              <p className="text-red-500">{formErrors.cardNumber}</p>
-            )}
-          </div>
 
-          <div className="flex flex-col py-3 space-y-3">
-            <div className="flex space-x-2">
-              <div className="flex flex-col">
-                <h1 className="uppercase text-xs md:text-[11px] font-medium text-black italic">
-                  exp. date
-                </h1>
-                <div className="flex space-x-2">
+            <article className="flex flex-col py-2  space-y-3">
+              <div className="flex space-x-2">
+                <div className="flex flex-1 flex-col">
+                  <h1 className="uppercase text-xs md:text-[11px] mb-2 font-medium text-black italic">
+                    exp. date (MM/YY)
+                  </h1>
+                  <div className="flex space-x-2">
+                    <input
+                      type="month"
+                      name="expiry_date"
+                      id="expiry_date"
+                      value={date}
+                      min={1}
+                      max={12}
+                      onChange={(e) => setDate(e.target.value)}
+                      className="border bg-white py-2 md:py-1 px-3 w-48 md:w-44 rounded-md"
+                      placeholder="MM YY"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <h1 className="uppercase text-xs md:text-[11px] mb-2 font-medium text-black italic">
+                    CVC
+                  </h1>
                   <input
                     type="text"
-                    name="expiryMonth"
-                    value={expiryMonth}
-                    className={`border bg-white py-2 md:py-1 px-3 w-20 rounded-md ${
-                      formErrors.expiryMonth ? "border-red-500" : ""
-                    }`}
-                    onChange={handleChange}
-                    placeholder="MM"
+                    name="cvc"
+                    value={cvc}
+                    id="cvc"
+                    onChange={(e) => setCvc(e.target.value)}
+                    maxLength={3}
+                    className="border bg-white py-2 md:py-1 px-3 w-[90px] md:w-[90px] rounded-md"
+                    placeholder="e.g. 123"
                   />
-                  {formErrors.expiryMonth && (
-                    <p className="text-red-500 ml-2">
-                      {formErrors.expiryMonth}
-                    </p>
-                  )}
                 </div>
               </div>
-              {/* Repeat the same pattern for other input fields */}
-              <div className="flex flex-col">
-                <h1 className="uppercase text-xs md:text-[11px]   font-medium text-black italic">
-                  MM/YY
-                </h1>
-                <input
-                  type="text"
-                  name="expiryYear"
-                  value={expiryYear}
-                  className={`border bg-white py-2 md:py-1 px-3 w-20 rounded-md ${
-                    formErrors.expiryYear ? "border-red-500" : ""
-                  }`}
-                  onChange={handleChange}
-                  placeholder="YY"
-                />
-                {formErrors.expiryYear && (
-                  <p className="text-red-500">{formErrors.expiryYear}</p>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <h1 className="uppercase text-xs md:text-[11px] font-medium text-black italic">
-                  CVC
-                </h1>
-                <input
-                  type="text"
-                  name="cvc"
-                  value={cvc}
-                  className={`border bg-white py-2 md:py-1 px-3 w-[120px] rounded-md ${
-                    formErrors.cvc ? "border-red-500" : ""
-                  }`}
-                  onChange={handleChange}
-                  placeholder="e.g. 123"
-                />
-                {formErrors.cvc && (
-                  <p className="text-red-500">{formErrors.cvc}</p>
-                )}
-              </div>
-            </div>
-          </div>
+            </article>
 
-          <button
-            onClick={handleSubmit}
-            className="w-[300px] bg-purple-950 py-3 px-5 rounded-md text-white  mt-5 md:mt-5"
-          >
-            Confirm
-          </button>
+            <button
+              onClick={() => setConfirmed(true)}
+              className="w-[300px] md:w-[280px] bg-purple-950 py-3 px-5 rounded-md text-white  mt-3 md:mt-5"
+            >
+              Confirm
+            </button>
+          </form>
         </div>
       </section>
     </header>
